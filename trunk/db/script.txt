@@ -1,0 +1,346 @@
+-- phpMyAdmin SQL Dump
+-- version 3.1.1
+-- http://www.phpmyadmin.net
+--
+-- Servidor: localhost
+-- Tiempo de generación: 26-08-2010 a las 20:11:50
+-- Versión del servidor: 5.0.67
+-- Versión de PHP: 5.2.8
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+--
+-- Base de datos: `dbcel`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cliente`
+--
+
+CREATE TABLE IF NOT EXISTS `cliente` (
+  `ID` int(8) NOT NULL auto_increment,
+  `nombre` varchar(255) NOT NULL default 'N/A' COMMENT 'Nombre o Razon Social',
+  `direccionId` int(8) NOT NULL,
+  `zonaId` int(8) NOT NULL,
+  `medidorId` int(8) NOT NULL,
+  `tipoClienteId` int(8) NOT NULL default '1',
+  `activo` int(1) default '1' COMMENT 'activo=1, inactivo=0',
+  PRIMARY KEY  (`ID`),
+  KEY `FK_cliente_direccion` (`direccionId`),
+  KEY `FK_cliente_zona` (`zonaId`),
+  KEY `FK_cliente_medidor` (`medidorId`),
+  KEY `FK_cliente_tipoCliente` (`tipoClienteId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+
+--
+-- Volcar la base de datos para la tabla `cliente`
+--
+
+INSERT INTO `cliente` (`ID`, `nombre`, `direccionId`, `zonaId`, `medidorId`, `tipoClienteId`, `activo`) VALUES
+(2, 'Pablo', 4, 2, 1, 1, 1),
+(4, 'Pepe', 7, 1, 2, 1, 1),
+(5, 'Lore', 8, 1, 3, 1, 1),
+(6, 'Prueba de Nombre Largo', 9, 2, 4, 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `direccion`
+--
+
+CREATE TABLE IF NOT EXISTS `direccion` (
+  `ID` int(8) NOT NULL auto_increment,
+  `calle` varchar(255) default NULL,
+  `altura` varchar(20) default NULL,
+  `piso` varchar(11) default NULL,
+  `departamento` varchar(20) default NULL,
+  `latitud` double default NULL COMMENT 'Latitud formato DD',
+  `longitud` double default NULL COMMENT 'Longitud formato DD',
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+--
+-- Volcar la base de datos para la tabla `direccion`
+--
+
+INSERT INTO `direccion` (`ID`, `calle`, `altura`, `piso`, `departamento`, `latitud`, `longitud`) VALUES
+(4, 'Alsina', '2259', '13', 'A', 0, 0),
+(6, 'Alsina', '223', '11', 'A', 0, 0),
+(7, 'Moreno', '111', '11', 'A', 0, 0),
+(8, 'Renar', '111', '11', '', 0, 0),
+(9, 'Y Direccion mas larga aun al 8800', '8800', '1', 'B', 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `equipo`
+--
+
+CREATE TABLE IF NOT EXISTS `equipo` (
+  `ID` int(8) NOT NULL auto_increment,
+  `usuario` varchar(255) NOT NULL,
+  `nroLegajo` varchar(255) NOT NULL,
+  `activo` int(1) NOT NULL default '1' COMMENT '0: inactivo, 1:activo',
+  `inventario` varchar(200) default NULL COMMENT 'identificacion inventario telefono',
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Volcar la base de datos para la tabla `equipo`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `equiporuta`
+--
+
+CREATE TABLE IF NOT EXISTS `equiporuta` (
+  `ID` int(8) NOT NULL auto_increment,
+  `rutaId` int(8) NOT NULL,
+  `equipoId` int(8) NOT NULL,
+  `fechaExportacion` datetime default NULL COMMENT 'Fecha y hora que se exporta ruta al equipo',
+  `fechaImportacionDatos` datetime default NULL COMMENT 'Fecha y hora en la que se importan datos del equipo',
+  PRIMARY KEY  (`ID`),
+  KEY `FK_equiporuta_ruta` (`rutaId`),
+  KEY `FK_equiporuta_equipo` (`equipoId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Volcar la base de datos para la tabla `equiporuta`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `estadomedidor`
+--
+
+CREATE TABLE IF NOT EXISTS `estadomedidor` (
+  `ID` int(8) NOT NULL auto_increment,
+  `descripcion` varchar(255) default NULL COMMENT 'descripcion del tipo de estado',
+  `funciona` int(1) default '1' COMMENT 'Indica si el medidor funciona en este estado. (1:si) (0:no)',
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Volcar la base de datos para la tabla `estadomedidor`
+--
+
+INSERT INTO `estadomedidor` (`ID`, `descripcion`, `funciona`) VALUES
+(3, 'Funciona bien', 1),
+(4, 'No Funciona', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `medicion`
+--
+
+CREATE TABLE IF NOT EXISTS `medicion` (
+  `ID` int(8) NOT NULL auto_increment,
+  `fecha` datetime NOT NULL COMMENT 'fecha en la que se toma la medicion',
+  `lectura` varchar(255) default NULL COMMENT 'valor de la lectura del operador',
+  `observacion` varchar(255) default NULL COMMENT 'observacion del operario al tomar la lectura del medidor',
+  `estadoLecturaId` int(1) NOT NULL default '1' COMMENT '1=Pendiente, 2=Cargado,3=Cancelado',
+  `medidorId` int(8) NOT NULL,
+  `fechaImportacion` datetime default NULL,
+  PRIMARY KEY  (`ID`),
+  KEY `FK_medicion_medidor` (`medidorId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=28 ;
+
+--
+-- Volcar la base de datos para la tabla `medicion`
+--
+
+INSERT INTO `medicion` (`ID`, `fecha`, `lectura`, `observacion`, `estadoLecturaId`, `medidorId`, `fechaImportacion`) VALUES
+(24, '2010-08-26 05:09:10', '7777777', '', 2, 4, '2010-08-26 19:12:08'),
+(25, '2010-08-26 05:11:25', '21111111', 'Ld', 2, 1, '2010-08-26 19:12:08'),
+(26, '2010-08-26 05:08:54', '31111111', '', 2, 2, '2010-08-26 19:12:08'),
+(27, '2010-08-26 05:09:05', '5555555', '', 2, 3, '2010-08-26 19:12:08');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `medidor`
+--
+
+CREATE TABLE IF NOT EXISTS `medidor` (
+  `ID` int(8) NOT NULL auto_increment,
+  `numero` varchar(255) NOT NULL,
+  `estadoMedidorId` int(8) NOT NULL,
+  `observaciones` varchar(255) default NULL,
+  PRIMARY KEY  (`ID`),
+  UNIQUE KEY `UK_numero_medidor` (`numero`),
+  KEY `FK_medidor_estadomedidor` (`estadoMedidorId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Volcar la base de datos para la tabla `medidor`
+--
+
+INSERT INTO `medidor` (`ID`, `numero`, `estadoMedidorId`, `observaciones`) VALUES
+(1, '1234567', 3, 'Medidor 1'),
+(2, '1234568', 4, 'No anda'),
+(3, '1234569', 3, ''),
+(4, '1234566', 3, '');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `ruta`
+--
+
+CREATE TABLE IF NOT EXISTS `ruta` (
+  `ID` int(11) NOT NULL auto_increment,
+  `descripcion` varchar(20) NOT NULL,
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+
+--
+-- Volcar la base de datos para la tabla `ruta`
+--
+
+INSERT INTO `ruta` (`ID`, `descripcion`) VALUES
+(2, 'Ruta zona oeste'),
+(3, 'Ruta zona sur'),
+(6, 'Ruta zona norte');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `rutaclientes`
+--
+
+CREATE TABLE IF NOT EXISTS `rutaclientes` (
+  `rutaId` int(8) NOT NULL default '0',
+  `clienteId` int(8) NOT NULL default '0',
+  `orden` int(10) NOT NULL COMMENT 'Indica el orden de visita del cliente en la ruta',
+  PRIMARY KEY  (`rutaId`,`clienteId`),
+  KEY `FK_rutaclientes_clientes` (`clienteId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Volcar la base de datos para la tabla `rutaclientes`
+--
+
+INSERT INTO `rutaclientes` (`rutaId`, `clienteId`, `orden`) VALUES
+(6, 2, 1),
+(6, 4, 2),
+(6, 5, 0),
+(6, 6, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipocliente`
+--
+
+CREATE TABLE IF NOT EXISTS `tipocliente` (
+  `ID` int(11) NOT NULL auto_increment,
+  `descripcion` varchar(255) default NULL,
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Volcar la base de datos para la tabla `tipocliente`
+--
+
+INSERT INTO `tipocliente` (`ID`, `descripcion`) VALUES
+(1, 'comun');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuario`
+--
+
+CREATE TABLE IF NOT EXISTS `usuario` (
+  `ID` int(8) NOT NULL auto_increment,
+  `nombre` varchar(200) NOT NULL,
+  `apellido` varchar(200) NOT NULL,
+  `password` varchar(200) NOT NULL,
+  `nick` varchar(200) NOT NULL,
+  `admin` int(1) default '0',
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Volcar la base de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`ID`, `nombre`, `apellido`, `password`, `nick`, `admin`) VALUES
+(1, 'Pablo', 'Scagno', '202cb962ac59075b964b07152d234b70', 'pscagno', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `zona`
+--
+
+CREATE TABLE IF NOT EXISTS `zona` (
+  `ID` int(8) NOT NULL auto_increment,
+  `descripcion` varchar(250) NOT NULL,
+  `zonaContenedoraId` int(8) default NULL,
+  PRIMARY KEY  (`ID`),
+  KEY `FK_zona_zonacontenedora` (`zonaContenedoraId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+
+--
+-- Volcar la base de datos para la tabla `zona`
+--
+
+INSERT INTO `zona` (`ID`, `descripcion`, `zonaContenedoraId`) VALUES
+(1, 'Barrio Centenario', 4),
+(2, 'Barrio Avilas', 3),
+(3, 'Zona sur', NULL),
+(4, 'Zona Oeste', NULL);
+
+--
+-- Filtros para las tablas descargadas (dump)
+--
+
+--
+-- Filtros para la tabla `cliente`
+--
+ALTER TABLE `cliente`
+  ADD CONSTRAINT `FK_cliente_direccion` FOREIGN KEY (`direccionId`) REFERENCES `direccion` (`ID`),
+  ADD CONSTRAINT `FK_cliente_medidor` FOREIGN KEY (`medidorId`) REFERENCES `medidor` (`ID`),
+  ADD CONSTRAINT `FK_cliente_tipoCliente` FOREIGN KEY (`tipoClienteId`) REFERENCES `tipocliente` (`ID`),
+  ADD CONSTRAINT `FK_cliente_zona` FOREIGN KEY (`zonaId`) REFERENCES `zona` (`ID`);
+
+--
+-- Filtros para la tabla `equiporuta`
+--
+ALTER TABLE `equiporuta`
+  ADD CONSTRAINT `FK_equiporuta_equipo` FOREIGN KEY (`equipoId`) REFERENCES `equipo` (`ID`),
+  ADD CONSTRAINT `FK_equiporuta_ruta` FOREIGN KEY (`rutaId`) REFERENCES `ruta` (`ID`);
+
+--
+-- Filtros para la tabla `medicion`
+--
+ALTER TABLE `medicion`
+  ADD CONSTRAINT `FK_medicion_medidor` FOREIGN KEY (`medidorId`) REFERENCES `medidor` (`ID`);
+
+--
+-- Filtros para la tabla `medidor`
+--
+ALTER TABLE `medidor`
+  ADD CONSTRAINT `FK_medidor_estadomedidor` FOREIGN KEY (`estadoMedidorId`) REFERENCES `estadomedidor` (`ID`);
+
+--
+-- Filtros para la tabla `rutaclientes`
+--
+ALTER TABLE `rutaclientes`
+  ADD CONSTRAINT `FK_rutaclientes_clientes` FOREIGN KEY (`clienteId`) REFERENCES `cliente` (`ID`),
+  ADD CONSTRAINT `FK_rutaclientes_ruta` FOREIGN KEY (`rutaId`) REFERENCES `ruta` (`ID`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `zona`
+--
+ALTER TABLE `zona`
+  ADD CONSTRAINT `FK_zona_zonacontenedora` FOREIGN KEY (`zonaContenedoraId`) REFERENCES `zona` (`ID`) ON DELETE SET NULL;
