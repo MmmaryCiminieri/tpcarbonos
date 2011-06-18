@@ -16,45 +16,32 @@ class DBManager {
 /***********************************************************/
 /*****************       Usuarios    ***********************/
 /***********************************************************/
-
-	function addUser($parameters_Dic){
+	function validarNick($parameters_Dic){
         $sql = "Select * from usuario where nick = '$parameters_Dic[nick]'";
         $existe = $this->_readOne($sql);
         if (is_array($existe)){
-            return "El Nick de usuario ya existe. Por favor, eliga otro.";
-        }
-	
-	    $esAdmin=1;
-       	if ($parameters_Dic[admin]!="1"){
-           $tipoPermiso = 8;//solo lectura
-           $esAdmin=0;
+           return "El Nick de usuario ya existe. Por favor, eliga otro.";
         }else{
-           $tipoPermiso = 15;//permiso a todo
+           return "";
         }
-        
+    }
+    
+	function addUsuario($parameters_Dic){
 		$sql_Str = "INSERT INTO usuario
-						(nick, admin, nombre, apellido, password)
+						(nick, admin, nombre, apellido, password, idEmpresa, mail, documento)
 					VALUES
-						('$parameters_Dic[nick]', $esAdmin, '$parameters_Dic[nombre]', '$parameters_Dic[apellido]', md5('$parameters_Dic[password]'))";
+						('$parameters_Dic[nick]', 0, '$parameters_Dic[nombre]', '$parameters_Dic[apellido]', md5('$parameters_Dic[password]'),$parameters_Dic[idempresa], '$parameters_Dic[mail]', '$parameters_Dic[documento]')";
 		$this->_executeQuery($sql_Str);
-
         $sql_Str = "Select id from usuario order by id desc LIMIT 1";
         $result = $this->_readOne($sql_Str);
         if (is_array($result)){
-           $idUser = $result[id];
+           return $result[id];
         }else{
            return "Unknown Error";
         }
-        
-		$windows = $this->listWindows();
-        foreach($windows as $win){
-              $sql_Insert = "Insert into usuarioventana (idusuario,idventana,tipoPermiso) values($idUser,$win[ID],$tipoPermiso)";
-              $this->_executeQuery($sql_Insert);
-        }
-		return true;
 	}
 
-    function listUsers($where){
+    function listUsuarios($where){
 
 		$sql_Str = "SELECT * FROM usuario " ;
 
@@ -67,74 +54,13 @@ class DBManager {
 		return $data;
 	}
 	
-	function deleteUser($parameters_Dic){
+	function deleteUsuario($parameters_Dic){
 		$sql_Str = "DELETE FROM usuario
 					WHERE ID = $parameters_Dic[ID]";
 		return $this->_executeQuery($sql_Str);
 	}
 
-    function havePermissionByWinName($oper,$idUser,$winName){
-         $sql = "Select ID from ventanas where nombre = '$winName'";
-
-         $win = $this->_readOne($sql);
-         if (is_array($win)){
-            $idWin = $win[ID];
-         }else{
-            return "No existe la funcion";
-         }
-
-         return $this->havePermission($oper,$idUser,$idWin);
-    }
-    
-    function havePermission($oper,$idUser,$idWin){
-
-         $operType = "(0)";
-         if ($oper=="alta"){
-            $operType = "(1,3,5,7,9,11,13,15)";
-         }
-         if ($oper=="baja"){
-            $operType = "(2,3,6,7,10,11,14,15)";
-         }
-         if ($oper=="modificacion"){
-            $operType = "(4,5,6,7,12,13,14,15)";
-         }
-         if ($oper=="lectura"){
-            $operType = "(8,9,10,11,12,13,14,15)";
-         }
-         $sql = "SELECT count(*)as q from usuarioventana where idusuario=$idUser and idventana=$idWin and tipoPermiso in $operType ";
-		 $data = $this->_readone($sql);
-         if ($data[q]==0){
-            return false;
-         }else{
-            return true;
-         }
-    }
-
-    function updateUserPermissions($parameters_Dic){
-        $windows = $this->listWindows();
-        foreach($windows as $win){
-              $tipoPermiso = 0;//ninguno
-              if ($parameters_Dic["alta".str_replace(" ", "_", $win[nombre])]=="yes"){
-                 $tipoPermiso +=1;//Alta
-              }
-              if ($parameters_Dic["baja".str_replace(" ","_",$win[nombre])]=="yes"){
-                 $tipoPermiso +=2;//Baja
-              }
-              if ($parameters_Dic["modificacion".str_replace(" ","_",$win[nombre])]=="yes"){
-                 $tipoPermiso +=4;//Modificacion
-              }
-              if ($parameters_Dic["lectura".str_replace(" ","_",$win[nombre])]=="yes"){
-                 $tipoPermiso +=8;//Lectura
-              }
-              $sql_Delete = "Delete from usuarioventana where idusuario=$parameters_Dic[ID] and idventana=$win[ID] ";
-              $sql_Insert = "Insert into usuarioventana (idusuario,idventana,tipoPermiso) values($parameters_Dic[ID],$win[ID],$tipoPermiso)";
-              $this->_executeQuery($sql_Delete);
-              $this->_executeQuery($sql_Insert);
-        }
-		return true;
-	}
-
-   	function updateUser($parameters_Dic){
+   	function updateUsuario($parameters_Dic){
         $esAdmin=1;
        	if ($parameters_Dic[admin]!="1"){
            $esAdmin=0;
@@ -143,26 +69,17 @@ class DBManager {
                     Set
                     admin = $esAdmin,
                     nombre = '$parameters_Dic[nombre]',
-                    apellido = '$parameters_Dic[apellido]'
+                    apellido = '$parameters_Dic[apellido]',
+                    mail = '$parameters_Dic[mail]',
+                    documento = '$parameters_Dic[documento]'
 					WHERE ID = $parameters_Dic[ID]";
 					//echo $sql_Str;
          $this->_executeQuery($sql_Str);
 
 		 return true;
 	}
-
-    function isUserInGroup($groupId, $usuarioId){
-   		$sql_Str = "SELECT * FROM usuariogrupo
-					WHERE usuarioId=$usuarioId and grupoId=$groupId";
-
-        $result = $this->_readAll($sql_Str);
-        if(count($result)>0){
-            return true;
-        }
-		return false;
-    }
     
-    function getUser($id){
+    function getUsuario($id){
         if ($id!=""){
     		$sql_Str = "SELECT * FROM usuario
 						WHERE ID = $id";
@@ -182,14 +99,251 @@ class DBManager {
 		return $this->_executeQuery($sql_Str);
 	}
 
-	function validateUser($parameters_Dic){
+	function validateUsuario($parameters_Dic){
 
 		$sql_Str = "SELECT * FROM usuario
 						WHERE nick = '$parameters_Dic[nick]'
-							AND password = md5('$parameters_Dic[pass]')";
-
-
+							AND password = md5('$parameters_Dic[password]')";
+                                      echo($sql_Str);
 		return $this->_readOne($sql_Str);
+	}
+	
+	function aprobarUsuario($id, $aprobar){
+
+             $sql_Str = "UPDATE usuario
+						SET aprobado = $aprobar
+						WHERE ID = $id";
+
+		    return $this->_executeQuery($sql_Str);
+	}
+
+/***********************************************************/
+/*****************     Empresas      ***********************/
+/***********************************************************/
+
+	function addEmpresa($parameters_Dic){
+        $sql = "Select * from empresa where razonsocial = '$parameters_Dic[razonsocial]' and idpais='$parameters_Dic[idpais]' ";
+        $existe = $this->_readOne($sql);
+        if (is_array($existe)){
+            return "El empresa ya se encuentra registrada.";
+        }
+
+		$sql_Str = "INSERT INTO empresa
+						(razonsocial, direccion, idpais, codigovalidacion, telefono, descripcion, web)
+					VALUES
+						('$parameters_Dic[razonsocial]', '$parameters_Dic[direccion]', $parameters_Dic[idpais], '$parameters_Dic[codigovalidacion]', '$parameters_Dic[telefono]', '$parameters_Dic[descripcion]', '$parameters_Dic[web]')";
+		$this->_executeQuery($sql_Str);
+        $sql_Str = "Select id from empresa order by id desc LIMIT 1";
+        $result = $this->_readOne($sql_Str);
+        if (is_array($result)){
+           return $result[id];
+        }else{
+           return "Unknown Error: $sql_Str" ;
+        }
+	}
+
+    function listEmpresas($where){
+
+		$sql_Str = "SELECT * FROM empresa " ;
+
+		if (!empty($where)) {
+			$sql_Str .=" WHERE $where";
+		}
+		$sql_Str .=" ORDER BY pais, razonsocial";
+
+		$data = $this->_readAll($sql_Str);
+		return $data;
+	}
+
+	function deleteEmpresa($parameters_Dic){
+		$sql_Str = "DELETE FROM empresa
+					WHERE ID = $parameters_Dic[ID]";
+		return $this->_executeQuery($sql_Str);
+	}
+
+   	function updateEmpresa($parameters_Dic){
+        $esAdmin=1;
+       	if ($parameters_Dic[admin]!="1"){
+           $esAdmin=0;
+        }
+		$sql_Str = "Update empresa
+                    Set
+                    razonsocial = '$parameters_Dic[razonsocial]',
+                    direccion = '$parameters_Dic[direccion]',
+                    idpais = $parameters_Dic[idpais],
+                    codigovalidacion = '$parameters_Dic[codigovalidacion]',
+                    telefono = '$parameters_Dic[telefono]',
+                    descripcion = '$parameters_Dic[descripcion]',
+                    web = '$parameters_Dic[web]',
+                    aprobado = $parameters_Dic[aprobado]
+					WHERE ID = $parameters_Dic[ID]";
+					//echo $sql_Str;
+         $this->_executeQuery($sql_Str);
+
+		 return true;
+	}
+
+    function getEmpresa($id){
+        if ($id!=""){
+    		$sql_Str = "SELECT * FROM empresa
+						WHERE ID = $id";
+
+	     	$result = $this->_readOne($sql_Str);
+   			return ($result);
+        }else{
+            return array();
+        }
+	}
+
+/***********************************************************/
+/*****************       Paises      ***********************/
+/***********************************************************/
+
+    function listPaises($where){
+
+		$sql_Str = "SELECT * FROM pais " ;
+
+		if (!empty($where)) {
+			$sql_Str .=" WHERE $where";
+		}
+		$sql_Str .=" ORDER BY nombre ";
+
+		$data = $this->_readAll($sql_Str);
+		return $data;
+	}
+
+    function getPais($id){
+        if ($id!=""){
+    		$sql_Str = "SELECT * FROM pais
+						WHERE ID = $id";
+
+	     	$result = $this->_readOne($sql_Str);
+   			return ($result);
+        }else{
+            return array();
+        }
+	}
+
+/***********************************************************/
+/***************** Organismo Certificante ******************/
+/***********************************************************/
+
+    function listOrganismosCertificantes($where){
+
+		$sql_Str = "SELECT * FROM organismocertificante " ;
+
+		if (!empty($where)) {
+			$sql_Str .=" WHERE $where";
+		}
+		$sql_Str .=" ORDER BY nombre ";
+
+		$data = $this->_readAll($sql_Str);
+		return $data;
+	}
+
+    function getOrganismoCertificante($id){
+        if ($id!=""){
+    		$sql_Str = "SELECT * FROM organismocertificante
+						WHERE ID = $id";
+
+	     	$result = $this->_readOne($sql_Str);
+   			return ($result);
+        }else{
+            return array();
+        }
+	}
+
+/***********************************************************/
+/*****************         tipo bono      ******************/
+/***********************************************************/
+
+    function listTipoBono($where){
+
+		$sql_Str = "SELECT * FROM tipobono " ;
+
+		if (!empty($where)) {
+			$sql_Str .=" WHERE $where";
+		}
+		$sql_Str .=" ORDER BY nombre ";
+
+		$data = $this->_readAll($sql_Str);
+		return $data;
+	}
+
+    function getTipoBono($id){
+        if ($id!=""){
+    		$sql_Str = "SELECT * FROM tipobono
+						WHERE ID = $id";
+
+	     	$result = $this->_readOne($sql_Str);
+   			return ($result);
+        }else{
+            return array();
+        }
+	}
+
+/***********************************************************/
+/*****************       Bono        ***********************/
+/***********************************************************/
+
+	function addBono($parameters_Dic){
+		$sql_Str = "INSERT INTO bono
+						(cer, precio, idusuario, fechacreacion, idorganismocertificante)
+					VALUES
+						('$parameters_Dic[cer]', '$parameters_Dic[precio]', $parameters_Dic[idusuario], '$parameters_Dic[fechacreacion]',$parameters_Dic[idorganismocertificante])";
+		$this->_executeQuery($sql_Str);
+
+        $sql_Str = "Select id from bono order by id desc LIMIT 1";
+        $result = $this->_readOne($sql_Str);
+        if (is_array($result)){
+           return $result[id];
+        }else{
+           return "Unknown Error";
+        }
+	}
+
+    function listBonos($where){
+
+		$sql_Str = "SELECT * FROM bonos " ;
+
+		if (!empty($where)) {
+			$sql_Str .=" WHERE $where";
+		}
+		$sql_Str .=" ORDER BY id ";
+
+		$data = $this->_readAll($sql_Str);
+		return $data;
+	}
+
+	function deleteBono($parameters_Dic){
+		$sql_Str = "DELETE FROM bono
+					WHERE ID = $parameters_Dic[ID]";
+		return $this->_executeQuery($sql_Str);
+	}
+
+   	function updateBono($parameters_Dic){
+		$sql_Str = "Update bono
+                    Set
+                    cer='$parameters_Dic[cer]',
+                    precio=$parameters_Dic[precio],
+                    idusuario=$parameters_Dic[idUsuario]
+					WHERE ID = $parameters_Dic[id]";
+					//echo $sql_Str;
+         $this->_executeQuery($sql_Str);
+
+		 return true;
+	}
+
+    function getBono($id){
+        if ($id!=""){
+    		$sql_Str = "SELECT * FROM bono
+						WHERE ID = $id";
+
+	     	$result = $this->_readOne($sql_Str);
+   			return ($result);
+        }else{
+            return array();
+        }
 	}
 
 /***********************************************************/
@@ -238,12 +392,11 @@ class DBManager {
         mysql_query($sql_Str, $this->link_Hnd);
 	    if (mysql_error()){
 	       echo("Error: ". mysql_error());
-           $this->rollbackTransaction();
            if (strlen(strstr(mysql_error(),"FOREIGN KEY"))>0){
-              return "No puede eliminar el registro ya que esta relacionado con otros datos.";
+              echo "No puede eliminar el registro ya que esta relacionado con otros datos.";
            }else{
               echo(strstr(mysql_error(),"FOREIGN KEY"). "<br>". $sql_Str);
-              die(mysql_error());
+              //die(mysql_error());
            }
         }
 		return 1;

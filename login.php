@@ -65,13 +65,10 @@ function MM_swapImage() { //v3.0
                 <table width="920" border="0" cellspacing="0" cellpadding="1">
                   <tbody>
                     <tr>
-                      <td width="20%" align="center">
+                      <td align="center">
                         <div align="center">
-                             <img src="images/icono.png" width="64" height="64" border="0" />
+                             <img src="images/carbonos.jpg"  width="184" height="64" border="0"/>
                         </div>
-                      </td>
-                      <td width="80%" align="center">
-                       <span style="font-size:22px;font-weight:bold;color:#666666;font-family:verdana">Acceso&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                       </td>
                     </tr>
                   </tbody>
@@ -110,7 +107,7 @@ function MM_swapImage() { //v3.0
                       <td height="30" valign="middle">&nbsp;</td>
                       <td align="right" valign="middle" class="titulos" style="padding-right:15px">Contrase&ntilde;a:</td>
                       <td valign="middle" style="padding-right:30px">
-                          <input name="pass" type="password" class="campo" id="pass" />
+                          <input name="password" type="password" class="campo" id="password" />
                       </td>
                     </tr>
                   </tbody>
@@ -167,8 +164,8 @@ function MM_swapImage() { //v3.0
         <div align="center">
         <p></p>
         <p class="footer">&nbsp;</p>
-        <p class="footer">&copy; Ant Automation S.A. 2010-2012</p>
-        <p></p>
+        <p class="footer">&copy; CARBONOS S.A. 2011-2012 - BonoVentas v1.0</p>
+        <p class="footer">&nbsp;</p>
         </div>
       </td>
       <td> </td>
