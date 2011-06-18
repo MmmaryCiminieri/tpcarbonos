@@ -24,7 +24,7 @@ if ($_SESSION[user][ID]==""){
                         </td>
                         <td width="60%" align="center">
                             <div align="center">
-                                 <img src="images/carbonos.jpg" width="184" height="64" border="0" />
+                                 <a href="home.php"><img src="images/carbonos.jpg" width="184" height="64" border="0" /></a>
                             </div>
                         </td>
                         <td width="20%">
