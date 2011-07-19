@@ -12,7 +12,20 @@ $db = new DBManager();
   <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
   <title>C A R B O N O S</title>
   <link href="est.css" rel="stylesheet" type="text/css" />
-  <style type="text/css"></style>
+  <style type="text/css">
+  #form table tbody tr td p {
+	color: #B9B9B9;
+}
+  #form table tbody tr td p {
+	color: #BFBFBF;
+}
+  #form table tbody tr td p {
+	color: #A8A8A8;
+}
+  #form table tbody tr td p {
+	color: #808080;
+}
+  </style>
   <script type="text/javascript">
 <!--
 var selImage=1;
@@ -78,8 +91,18 @@ function MM_swapImage() { //v3.0
 						  </td>
 						</tr>
 						<tr>
-						  <td height="10" colspan="3" align="left"><span style="font-weight:bold;color:green">Quienes somos:</span><br />
-                          <span style="font-weight:normal;color:gray">Pablin escribi!!</span></td>
+						  <td height="10" colspan="3" align="left"><p><span style="font-weight:bold;color:green">Quienes somos:</span><br />
+						    Somos una grupo de personas concientes del medio ambiente y de los cambios clim&aacute;ticos <br />
+						    que ha sufrido el planeta como consecuencia de la emisi&oacute;n de gases de efecto invernadero.<br />
+Tambi&eacute;n somos concientes de que muchos gobiernos, empresas e individuos est&aacute;n tomando<br />
+acciones para reducir estos efectos. </p>
+						    <p>Por ello, es que nos hemos juntado para poder acercar empresas que necesitan reducir<br />
+						      sus impuestos por emisiones de gases de efecto invernadero con aquellas otras que <br />
+						      buscan financiar sus proyectos de desarrollo libre para tener un planeta m&aacute;s limpio,<br />
+						      utilizando energ&iacute;as renovables y procesos m&aacute;s eficientes en el aprovechamiento de <br />
+						      las mismas.</p>
+						    <p><br />
+				          </p></td>
 						</tr>
 					  </tbody>
 					</table><!-- Tabla 2 columnas-->
