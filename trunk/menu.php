@@ -11,7 +11,7 @@
                           &nbsp;&nbsp;&nbsp;&nbsp;
                           <a href="Consumos.php" id="vender" style="color:darkgreen;font-weight:normal;">Mis Datos</a>
                           &nbsp;&nbsp;&nbsp;&nbsp;
-                          <a href="Consumos.php" id="vender" style="color:darkgreen;font-weight:normal;">Quienes somos</a>
+                          <a href="quienes_somos.php" id="vender" style="color:darkgreen;font-weight:normal;">Quienes somos</a>
                           &nbsp;&nbsp;&nbsp;&nbsp;
                           <a href="Consumos.php" id="vender" style="color:darkgreen;font-weight:normal;">Contactenos</a>
                       </td>
